@@ -1,17 +1,13 @@
-name: Generate macOS Tahoe Recovery Image
+name: Tahoe Beta 1 Recovery Image
 
 on:
   workflow_dispatch:
-
-run-name: Generate macOS Tahoe Recovery Image
-
 
 jobs:
   build:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      
 
       - name: Download macOS Installer
         run: |
