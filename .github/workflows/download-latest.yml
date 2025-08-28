@@ -17,21 +17,23 @@ jobs:
         run: |
           python ./gibMacOS/gibMacOS.py -r -v 10.13 -o /tmp/highsierra-10.13
 
-      - name: Install the assistant
+      - name: Build Install macOS High Sierra.app
         run: |
-          sudo installer -pkg /tmp/highsierra-10.13/InstallAssistant.pkg -target /
+          cd /tmp/highsierra-10.13
+          chmod +x ./BuildmacOSInstallApp.command
+          ./BuildmacOSInstallApp.command
 
-      - name: Generate macOS Installer
-        run: |
-          INSTALLER=$(ls -d /Applications/Install*.app | head -n 1 || true)
-          if [ ! -d "$INSTALLER" ]; then
-            echo "Could not find Install macOS app in /Applications"
+          if [ ! -d "/Applications/Install macOS High Sierra.app" ]; then
+            echo "Failed to create Install macOS High Sierra.app"
             ls -l /Applications
             exit 1
           fi
+
+      - name: Generate macOS Installer
+        run: |
+          INSTALLER="/Applications/Install macOS High Sierra.app"
           SIZE_MB=$(du -sm "$INSTALLER" | cut -f1)
 
-          # Add 40% headroom and ceil
           EXTRA=$(echo "($SIZE_MB * 0.4 + 0.999)/1" | bc)
           TOTAL_MB=$(( SIZE_MB + EXTRA ))
 
@@ -43,7 +45,6 @@ jobs:
           sleep 10
           sudo "$INSTALLER/Contents/Resources/createinstallmedia" --volume /Volumes/HighSierra --nointeraction
 
-          # Detect created installer volume
           INSTALL_VOL=$(ls -d /Volumes/Install* | head -n 1 || true)
           if [ ! -d "$INSTALL_VOL" ]; then
             echo "Could not find installer volume in /Volumes"
